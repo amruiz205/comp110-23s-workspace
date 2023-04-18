@@ -1,24 +1,65 @@
 temp = [
-['12-12-2005', 'BMW', '2013', 'buy', '50000']
-['12-12-2007', 'honda', '2013', 'sell', '5000']
-['12-10-2006', 'hyundai', '2013', 'sell', '500000']
-['29-12-2005', 'BMW', '1900', 'buy', '50000']
-['12-12-2019', '2024', '2024', 'buy', '60000000']
-['12-12-2005', 'bmw', '2005', 'buy', '20000']
-['12-12-2005', 'BMW', '2013', 'buy', '20000']
-['12-12-2005', 'BMW', '2015', 'buy', '50000']
-['12-12-2005', 'BMW', '2005', 'buy', '50000000']
-['12-12-2005', 'BMW', '2005', 'buy', '500000']
-['12-12-2005', 'BMW', '2013', 'buy', '500000']
-['12-12-2005', 'BMW', '2005', 'buy', '2015']
+['12-12-2005', 'BMW', '2013', 'buy', '50000'],
+
  ]       
 
-# with open('book_keeping.txt') as x:
-#     lines = x.readlines()  
 
 
 playing: bool = False
 playing_2: bool = True
+
+def calculate_total_bought(x) -> int:
+            i: int = 0
+            while i < len(temp):
+                total_sales = temp[i[4]]
+                i += 1
+                total_sales = total_sales + temp[i[4]]
+            return total_sales
+
+
+def calculate_total_amount_sold(transactions):
+    total_sold = 0
+    for transaction in transactions:
+        if transaction[3] == 'sell':
+            total_sold += int(transaction[4])
+    return total_sold
+
+def calculate_annual_sales_by_year(sales_list):
+    annual_sales_by_year = {}
+    for sale in sales_list:
+        year = sale[0].split('-')[2]  
+        if year not in annual_sales_by_year:
+            annual_sales_by_year[year] = 0
+        if sale[3] == 'buy':
+            annual_sales_by_year[year] += int(sale[4])
+        else:
+            annual_sales_by_year[year] -= int(sale[4])
+    return annual_sales_by_year
+
+def calculate_vehicles_sold_by_manufacturer(temp):
+    vehicles_sold_by_manufacturer = {}
+    for transaction in temp:
+        manufacturer = transaction[1].lower() 
+        transaction_type = transaction[3]
+        quantity = int(transaction[4])
+        if transaction_type == 'sell':
+            if manufacturer in vehicles_sold_by_manufacturer:
+                vehicles_sold_by_manufacturer[manufacturer] -= quantity
+            else:
+                vehicles_sold_by_manufacturer[manufacturer] = -quantity
+        else:
+            if manufacturer in vehicles_sold_by_manufacturer:
+                vehicles_sold_by_manufacturer[manufacturer] += quantity
+            else:
+                vehicles_sold_by_manufacturer[manufacturer] = quantity
+    for manufacturer, quantity in vehicles_sold_by_manufacturer.items():
+        if quantity > 0:
+            print(f"{manufacturer.capitalize()}: {quantity} vehicles sold")
+
+
+
+
+
 
 
 while playing_2 == True:
@@ -33,26 +74,17 @@ while playing_2 == True:
     if command_options == "--transaction history":
         with open('book_keeping.txt', 'r' ) as f:
             print(f.read()) 
+    
     if command_options == "--total bought":
-        print('x')
-        # def calculate_total_sales(temp):
-        #     i: int = 0 
-        #     while i < len(temp):
-        #         if temp[i[2]] == year:
-        #             total_sales += temp[i[4]]
-        #     return total_sales
+        print(calculate_total_bought(temp))
     
-    #    def calculate_total_sales(temp, year): 
-    #         total_sales = 0
-    #         for i in temp:
-    #             if i[2] == year:
-    #                 total_sales += i[4]
-    #         return total_sales
-    # print(calculate_total_sales)  
+    if command_options == "--total sold":
+        print(calculate_total_amount_sold(temp))
 
-    
-    
-    
+    if command_options == "--annual sales":
+        print(calculate_annual_sales_by_year(temp))
+    if command_options == "--manufacturers sold":
+        calculate_vehicles_sold_by_manufacturer(temp)
     
     while playing is True:
 
@@ -74,7 +106,7 @@ while playing_2 == True:
                 transaction_year = input("what year did the transaction take place? ")
 
         transaction = transaction_date + "-" + transaction_month + "-" + transaction_year
-        list = transaction.split()
+        l = transaction.split()
 
 
         transaction = transaction + " " + input("what was the model? ") 
@@ -100,11 +132,12 @@ while playing_2 == True:
 
         transaction = transaction + " " + transaction_type + " " + transaction_price
 
-        list = transaction.split()
-
+        l = transaction.split()
+        temp.append([l])
+  
         with open('book_keeping.txt', 'a') as file:
-            file.write("\n" + str(list))
-
+            file.write("\n" + str(l))
+        
         keep_playing: str = input("would you like to put in another transaction? ")
         if keep_playing != ("no") and keep_playing != ("yes"):
             print("Error: Select a valid answer ")
@@ -114,18 +147,4 @@ while playing_2 == True:
             playing_2 = True
 
 
-
-# while playing_2 == True:
-#     command_options: str = input("OPTIONS:" + "\n" + "--new entry" + "\n" + "--total bought" + "\n" + "--total sold" + "\n" + "--annual sales" + "\n" + "--manufacturers sold" + "\n" + "--exit" + "\n")
-#     while command_options != "--new entry" or "--total bought" or "--total sold" or "--annual sales" or "--manufacturers sold" or "--exit":
-#         print("Error: Select a valid option")
-#     if command_options == "exit":
-#         exit()
-
-
-# with open('book_keeping.txt', 'r' ) as f:
-#             print(f.read()) 
-
-# with open('book_keeping.txt', 'r') as l:
-#     print(f[4].read())
 
